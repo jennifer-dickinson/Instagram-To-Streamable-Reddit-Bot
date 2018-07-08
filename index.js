@@ -1,18 +1,19 @@
 var fetch = require("node-fetch");
 var fs = require("fs");
 
-var token = fs.readFileSync("token.txt", "utf-8").split("\n")[0];
+var [suser, spass, ruser, rpass] = fs.readFileSync("credentials.txt", "utf-8").split("\n");
+console.log(suser, spass, ruser, rpass)
 
 var rx = /instagram.com\/p\/([A-z0-9]+)\/?/;
-var redditURL = 'https://www.reddit.com'
-var subreddit = '/r/Istillfit/.json'
+var redditURL = 'https://www.reddit.com/'
+var subreddit = '/r/Istillfit/'
 // var instagramVideo = /instagram.com/p\//;
 async function findConvertInst() {
     // fetch('https://reddit.com/r/bouldering/new/.json')
 
     // get the list of instagram URLS
     var media = [];
-    await fetch(`${redditURL}${subreddit}`)
+    await fetch(`${redditURL}${subreddit}.json`)
     .then(response => { return response.json(); })
     .then(response => { return response.data.children; })
     .then(async post => {
@@ -26,27 +27,28 @@ async function findConvertInst() {
                 .then( response => { return response[1].data.children })
                 .then( comment => {
                     for (j = 0; j < comment.length; j++)
-                    if(comment[j].data.author === 'fitnomad')
+                    if(comment[j].data.author === ruser)
                     valid = false;
                 });
 
                 // If not, we push it to the media to check for videos
                 if (valid) {
                     var media_id = rx.exec(post[i].data.url)[1]
-                    var is_video = false;
-                    await fetch(`https://www.instagram.com/p/${media_id}?__a=1`)
+                    var url = `https://www.instagram.com/p/${media_id}/`
+
+                    // Find out which instagram URLS are actual videos
+                    await fetch(`${url}?__a=1`)
                     .then( response => { return response.json(); })
                     .then( response => {
-                        if (response.graphql.shortcode_media.is_video) is_video = true;
-                        console.log('hooray!');
+                        if (response.graphql.shortcode_media.is_video)
+                            media.push(url);
                     });
 
                 }
             }
         }
     })
-
-    // Find out which instagram URLS are actual videos
+    console.log(media);
 }
 
 
