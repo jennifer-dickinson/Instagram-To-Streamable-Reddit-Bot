@@ -1,8 +1,9 @@
 var fetch = require("node-fetch");
 var fs = require("fs");
+let base64 = require('base-64');
 
-var [suser, spass, ruser, rpass] = fs.readFileSync("credentials.txt", "utf-8").split("\n");
-console.log(suser, spass, ruser, rpass)
+
+var [streamable_user, streamable_pass, reddit_user, reddit_pass] = fs.readFileSync("credentials.txt", "utf-8").split("\n");
 
 var rx = /instagram.com\/p\/([A-z0-9]+)\/?/;
 var redditURL = 'https://www.reddit.com/'
@@ -27,7 +28,7 @@ async function findConvertInst() {
                 .then( response => { return response[1].data.children })
                 .then( comment => {
                     for (j = 0; j < comment.length; j++)
-                    if(comment[j].data.author === ruser)
+                    if(comment[j].data.author === reddit_user)
                     valid = false;
                 });
 
@@ -49,6 +50,15 @@ async function findConvertInst() {
         }
     })
     console.log(media);
+
+    for (i = 0; i < media.length; i++) {
+        await fetch(`https://api.streamable.com/import?url=${media[i]}`, {
+            headers: {
+                'Authorization': 'Basic ' + base64.encode(streamable_user + ":" + streamable_pass)
+            } })
+        .then( response => {return response.json();})
+        .then( shortcode => {console.log(shortcode)})
+    }
 }
 
 

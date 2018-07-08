@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/jennifersalas/Instagram-To-Streamable-Reddit-Bot#readme",
   "dependencies": {
+    "base-64": "^0.1.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "fs": "0.0.1-security",
