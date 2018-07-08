@@ -5,7 +5,7 @@ var token = fs.readFileSync("token.txt", "utf-8").split("\n")[0];
 
 var rx = /instagram.com\/p\/([A-z0-9]+)\/?/;
 var redditURL = 'https://www.reddit.com'
-var subreddit = '/r/bouldering/.json'
+var subreddit = '/r/Istillfit/.json'
 // var instagramVideo = /instagram.com/p\//;
 async function findConvertInst() {
     // fetch('https://reddit.com/r/bouldering/new/.json')
@@ -33,20 +33,18 @@ async function findConvertInst() {
                 // If not, we push it to the media to check for videos
                 if (valid) {
                     var media_id = rx.exec(post[i].data.url)[1]
-                    media.push(media_id);
+                    var is_video = false;
+                    await fetch(`https://www.instagram.com/p/${media_id}?__a=1`)
+                    .then( response => { return response.json(); })
+                    .then( response => {
+                        if (response.graphql.shortcode_media.is_video) is_video = true;
+                        console.log('hooray!');
+                    });
+
                 }
             }
         }
     })
-
-    console.log(media);
-
-    for (i = 0; i < media.length; i++) {
-        await fetch(`https://www.instagram.com/p/${media[i]}?__a=1`)
-        // .then( response => {return response.json();})
-        .then( response => { return response.json(); })
-        .then( response => console.log(response));
-    }
 
     // Find out which instagram URLS are actual videos
 }
