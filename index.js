@@ -52,12 +52,18 @@ async function findConvertInst() {
     console.log(media);
 
     for (i = 0; i < media.length; i++) {
+        var shortcode = ''
         await fetch(`https://api.streamable.com/import?url=${media[i]}`, {
             headers: {
                 'Authorization': 'Basic ' + base64.encode(streamable_user + ":" + streamable_pass)
             } })
         .then( response => {return response.json();})
-        .then( shortcode => {console.log(shortcode)})
+        .then( sc => {shortcode = sc});
+
+        await fetch(`https://www.reddit.com/api/comment/`, {
+            method: 'POST',
+            header: 
+        })
     }
 }
 
